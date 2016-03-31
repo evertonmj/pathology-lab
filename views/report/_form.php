@@ -57,7 +57,22 @@ use yii\widgets\Pjax;
               ],
               'final_value',
 
-              ['class' => 'yii\grid\ActionColumn'],
+              [
+                'class' => 'yii\grid\ActionColumn',
+                'contentOptions' => ['style' => 'width:260px;'],
+                'header'=>'Actions',
+                'template'=>'{remove-result}',
+                'buttons' => [
+                    'remove-result' => function ($modelGrid, $key, $index) {
+                            $url = Url::toRoute($modelGrid);
+                            return Html::a('<span class="glyphicon glyphicon-trash"></span>', 'remove-result?id=' . $index, [
+                                        'title' => \Yii::t('yii', 'Delete'),
+                                        'data-confirm' => \Yii::t('yii', 'Are you sure to delete this item?'),
+                                        'data-method' => 'post',
+                            ]);
+                    }
+                ],
+              ],
           ],
       ]);
       Pjax::end();
@@ -90,7 +105,7 @@ use yii\widgets\Pjax;
     <?= $form->field($modelResult, 'final_value')->textInput(['maxlength' => true]) ?>
 
     <div class="form-group">
-        <?= Html::submitButton(Yii::t('app', 'Add'), ['class' => 'btn btn-success']) ?>
+        <?= Html::button(Yii::t('app', 'Add'), ['class' => 'btn btn-success', 'id'=>'add-result-button']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
@@ -99,8 +114,13 @@ use yii\widgets\Pjax;
 </div>
 <?php
 $this->registerJs('
-    $("#create-result-form").submit(function(e) {
-        e.preventDefault();
+    var requestSent = false;
+
+    $("#add-result-button").click(function(e) {
+      e.preventDefault();
+      if(!requestSent) {
+        requestSent = true;
+
         $(".form-group").removeClass("has-error");      //remove error class
         $(".help-block").html("");                      //remove existing error messages
 
@@ -112,9 +132,9 @@ $this->registerJs('
             url: action_url,
             data: form_data
         })
-        .done(function( data ) {
-            //console.log(data);
-            if(data.success == true)    {       //data saved successfully
+        .complete(function( data ) {
+            requestSent = false;
+            if(data.status == 200)    {       //data saved successfully
               $.pjax.reload({container: "#results-grid"});
               $("#modal").modal("hide");
             }   else    {//validation errors occurred
@@ -126,4 +146,5 @@ $this->registerJs('
 
         });
         return false;
+      }
     });', \yii\web\View::POS_READY, 'result-ajax-form-submit');

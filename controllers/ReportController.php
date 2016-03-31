@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Report;
+use app\models\Result;
 use app\models\ReportSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -123,5 +124,17 @@ class ReportController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    public function actionRemoveResult($id) {
+      $result = Result::findOne($id);
+      $reportId = 0;
+      
+      if($result != null) {
+        $reportId = $result->report_id;
+        $result->delete();
+      }
+
+      return $this->redirect(['update', 'id' => $reportId]);
     }
 }
