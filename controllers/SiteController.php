@@ -29,7 +29,7 @@ class SiteController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'logout' => ['post'],
+                    'logout' => ['get'],
                 ],
             ],
         ];
@@ -70,6 +70,8 @@ class SiteController extends Controller
 
             if(Yii::$app->user->login($identity)) {
               return $this->goBack();
+            } else {
+
             }
         }
         return $this->render('login', [

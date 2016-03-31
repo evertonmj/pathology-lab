@@ -2,6 +2,9 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Url;
+use yii\data\ActiveDataProvider;
+use app\models\Report;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\ResultSearch */
@@ -14,23 +17,42 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <?= Html::a(Yii::t('app', 'Create Result'), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
+    <?php
+    $dataProvider = new ActiveDataProvider([
+        'query' => Report::find()->where(['patient_id'=>Yii::$app->user->id]),
+        'pagination' => [
+            'pageSize' => 50,
+        ],
+    ])
+    ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'test_id',
-            'report_id',
-            'final_value',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            'description',
+            'creation_date',
+            [
+              'class' => 'yii\grid\ActionColumn',
+              'template' => '{print} {email}',
+              'buttons' => [
+                'print' => function ($modelGrid, $key, $index) {
+                        $url = Url::toRoute($modelGrid);
+                        return Html::a('<span class="glyphicon glyphicon-download"></span>', 'result/download-report?id=' . $index, [
+                                    'title' => \Yii::t('yii', 'Download Report'),
+                                    'data-method' => 'get',
+                        ]);
+                },
+                'email' => function ($modelGrid, $key, $index) {
+                        $url = Url::toRoute($modelGrid);
+                        return Html::a('<span class="glyphicon glyphicon-envelope"></span>', 'result/email?id=' . $index, [
+                                    'title' => \Yii::t('yii', 'Email Report'),
+                                    'data-method' => 'post',
+                        ]);
+                }
+              ]
+            ],
         ],
     ]); ?>
 

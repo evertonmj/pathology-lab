@@ -11,7 +11,7 @@ $this->title = 'My Yii Application';
 
         <p class="lead">Welcome to Pathology Lab Reporting System.</p>
 
-        <p><a class="btn btn-lg btn-success" href="report">Create a New Report</a></p>
+        <p>Use the menu above to navigate on the system.</p>
     </div>
 
     <div class="body-content">

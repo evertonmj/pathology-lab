@@ -8,6 +8,7 @@ use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
+use app\models\User;
 
 AppAsset::register($this);
 ?>
@@ -33,26 +34,29 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
+
+    if(Yii::$app->user->id != null) {
+      $user = User::findOne(Yii::$app->user->id);
+    }
+
+    $items = [['label' => 'Home', 'url' => ['/site/index']]];
+    if(!Yii::$app->user->isGuest && $user->type != "U") {
+      $items[] = ['label' => 'Users', 'url' => ['/user']];
+      $items[] = ['label' => 'Tests', 'url' => ['/test']];
+      $items[] = ['label' => 'Reports', 'url' => ['/report']];
+      $items[] = ['label' => 'Logout', 'url' => ['/site/logout']];
+    }
+    elseif(!Yii::$app->user->isGuest && $user->type == "U") {
+      $items[] = ['label' => 'Results', 'url' => ['/result']];
+      $items[] = ['label' => 'Logout', 'url' => ['/site/logout']];
+    }
+    else {
+      $items[] = ['label' => 'Login', 'url' => ['/site/login']];
+    }
+
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'Users', 'url' => ['/user']],
-            ['label' => 'Tests', 'url' => ['/test']],
-            ['label' => 'Reports', 'url' => ['/report']],
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/site/login']]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/site/logout'], 'post')
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
-                    ['class' => 'btn btn-link']
-                )
-                . Html::endForm()
-                . '</li>'
-            )
-        ],
+        'items' => $items,
     ]);
     NavBar::end();
     ?>

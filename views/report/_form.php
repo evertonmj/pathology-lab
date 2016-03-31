@@ -21,7 +21,7 @@ use yii\widgets\Pjax;
     <?php $form = ActiveForm::begin(); ?>
 
     <?= $form->field($model, 'patient_id')->dropdownList(
-      User::find('type = "U"')->select(['fullname', 'id'])->indexBy('id')->column(),
+      User::find()->where(['type'=>'U'])->select(['fullname', 'id'])->indexBy('id')->column(),
       ['prompt'=>'Select Patient']
     );?>
 
@@ -41,7 +41,7 @@ use yii\widgets\Pjax;
     <?php
       //shows results already added
       $dataProvider = new ActiveDataProvider([
-          'query' => Result::find('report_id = :report_id', ['report_id'=>$model->id]),
+          'query' => Result::find()->where(['report_id'=>$model->id]),
           'pagination' => [
               'pageSize' => 50,
           ],
