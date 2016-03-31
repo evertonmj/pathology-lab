@@ -71,6 +71,30 @@ class ResultController extends Controller
         }
     }
 
+    public function actionAddResult()
+    {
+      $model = new Result();
+      if ($model->load(Yii::$app->request->post())) {
+          $success = false;
+          $error = [];
+          if($model->save())    {
+              $success = true;
+          }   else    {
+              $error = $model->getErrors();       //get validation error messages
+          }
+          header('Cache-Control: no-cache, must-revalidate');
+          header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+          header('Content-type: application/json');
+          echo json_encode(['success' => $success, 'error' => $error ]);
+
+          Yii::$app->end();
+      } else {
+          return $this->render('contact', [
+              'model' => $model,
+          ]);
+      }
+    }
+
     /**
      * Updates an existing Result model.
      * If update is successful, the browser will be redirected to the 'view' page.
