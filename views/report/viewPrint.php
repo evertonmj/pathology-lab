@@ -11,6 +11,8 @@ use yii\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Report */
 $model = Report::findOne($_GET['id']);
+$operatorName = $model->operator->fullname;
+$patientName = $model->patient->fullname;
 
 $this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Reports'), 'url' => ['index']];
@@ -24,8 +26,14 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'operator_id',
-            'patient_id',
+            [
+              'attribute' => 'operator_id',
+              'value' => $operatorName
+            ],
+            [
+              'attribute' => 'patient_id',
+              'value' => $patientName
+            ],
             'creation_date',
             'description',
         ],

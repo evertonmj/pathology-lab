@@ -35,20 +35,24 @@ $this->params['breadcrumbs'][] = $this->title;
             'creation_date',
             [
               'class' => 'yii\grid\ActionColumn',
-              'template' => '{print} {email}',
+              'template' => '{view} {print} {email}',
               'buttons' => [
+                'view' => function ($modelGrid, $key, $index) {
+                        $url = Url::toRoute($modelGrid);
+                        return Html::a('<span class="glyphicon glyphicon-search"></span>', 'result/view-report?id=' . $index, [
+                                    'title' => \Yii::t('yii', 'View Report'),
+                        ]);
+                },
                 'print' => function ($modelGrid, $key, $index) {
                         $url = Url::toRoute($modelGrid);
                         return Html::a('<span class="glyphicon glyphicon-download"></span>', 'result/download-report?id=' . $index, [
                                     'title' => \Yii::t('yii', 'Download Report'),
-                                    'data-method' => 'get',
                         ]);
                 },
                 'email' => function ($modelGrid, $key, $index) {
                         $url = Url::toRoute($modelGrid);
                         return Html::a('<span class="glyphicon glyphicon-envelope"></span>', 'result/email?id=' . $index, [
                                     'title' => \Yii::t('yii', 'Email Report'),
-                                    'data-method' => 'post',
                         ]);
                 }
               ]

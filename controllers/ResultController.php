@@ -67,10 +67,17 @@ class ResultController extends Controller
       }
     }
 
+    public function actionViewReport($id) {
+      return $this->render('/report/viewPrint', [
+          'id' => $id,
+      ]);
+    }
+
     public function actionDownloadReport($id) {
       $pdf = new Pdf([
           'mode' => Pdf::MODE_CORE, // leaner size using standard fonts
           'content' => $this->renderPartial('/report/viewPrint', ['id'=>$id]),
+          'destination' => Pdf::DEST_DOWNLOAD,
           'options' => [
               'title' => 'Results Report - Pathology Lab Reporting System',
               'subject' => 'Your Report'
@@ -80,12 +87,22 @@ class ResultController extends Controller
               'SetFooter' => ['|Page {PAGENO}|'],
           ]
       ]);
-      
+      //var_dump("cheguei!");die();
       return $pdf->render();
     }
 
     public function actionEmailReport($id) {
-      return "email!";
+      if(Yii::$app->mailer->compose()
+          ->setFrom('evertonmj@gmail.com')
+          ->setTo('evertonmj@gmail.com')
+          ->setSubject('Here\'s your report from Pathology Lab')
+          ->setHtmlBody('<b>Here\'s your report!</b>')
+          ->send()) {
+        return "foi!";
+      } else {
+        return "nao foi!";
+      }
+
     }
 
     /**
